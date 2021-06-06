@@ -1,10 +1,11 @@
 package com.nagarro.challenge.controller;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +24,19 @@ public class StatementController {
 
 	@GetMapping("/{accountId}")
 	public List<Statement> getAllStatements(@PathVariable long accountId,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date startDate,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date endDate,
-			@RequestParam(required = false) String fromAmout, @RequestParam(required = false) String toAmount) {
-		return statementService.getAllStatements(accountId, startDate, endDate, fromAmout, toAmount);
+			SecurityContextHolderAwareRequestWrapper request,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "MM/dd/yyyy") LocalDate startDate,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "MM/dd/yyyy") LocalDate endDate,
+			@RequestParam(required = false) Double fromAmount, @RequestParam(required = false) Double toAmount)
+			throws Exception {
+		if (request.isUserInRole("ADMIN")) {
+			return statementService.getAllStatements(accountId, startDate, endDate, fromAmount, toAmount);
+		} else {
+			if (startDate != null || endDate != null || fromAmount != null || toAmount != null) {
+				throw new Exception("Invalid Parameters");
+			}
+			LocalDate now = LocalDate.now();
+			return statementService.getAllStatementsByDateRange(accountId, now.minusMonths(3), now);
+		}
 	}
 }

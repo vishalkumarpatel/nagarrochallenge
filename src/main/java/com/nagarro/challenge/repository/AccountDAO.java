@@ -22,6 +22,6 @@ public class AccountDAO {
 	}
 
 	public Account getAccountById(final long id) {
-		return this.jdbcTemplate.queryForObject(SELECT_BY_ID, new Object[] { id }, new AccountRowMapper());
+		return this.jdbcTemplate.queryForObject(SELECT_BY_ID, new AccountRowMapper(), id);
 	}
 }

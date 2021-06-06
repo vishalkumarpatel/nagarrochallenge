@@ -1,12 +1,14 @@
 package com.nagarro.challenge.service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.nagarro.challenge.model.Statement;
 
 public interface StatementService {
 
-	List<Statement> getAllStatements(long accountId, Date startDate, Date endDate, String fromAmout, String toAmount);
+	List<Statement> getAllStatementsByDateRange(long accountId, LocalDate startDate, LocalDate endDate);
 
+	List<Statement> getAllStatements(long accountId, LocalDate startDate, LocalDate endDate, Double fromAmount,
+			Double toAmount);
 }
